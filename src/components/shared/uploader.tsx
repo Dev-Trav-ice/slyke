@@ -26,7 +26,6 @@ export default function Uploader() {
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
-  // ✅ Listen for form submit and reset
   useEffect(() => {
     const handleFormData = () => {
       setFile(null);

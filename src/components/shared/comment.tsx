@@ -1,4 +1,4 @@
-import { Comment } from "@/generated/prisma";
+import { Comment } from "@prisma/client";
 import { MessageCircle } from "lucide-react";
 
 export default function PostComments({ comment }: { comment: Comment[] }) {
