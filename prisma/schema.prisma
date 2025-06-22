@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Follow{
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  followerId  String   @db.ObjectId
+  followingId String   @db.ObjectId
+  createdAt   DateTime @default(now())
+
+  follower    User     @relation("FollowingRelation", fields: [followerId], references: [id])
+  following   User     @relation("FollowerRelation", fields: [followingId], references: [id])
+}
+
+model User {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  clerkId     String   @unique
+  email       String   @unique
+  username    String   @unique
+  bio         String?
+  image       String?
+  location    String?
+  website     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  posts       Post[]
+  comments    Comment[]
+  likes       Like[]
+
+  followers   Follow[] @relation("FollowerRelation")
+  following   Follow[] @relation("FollowingRelation")
+}
+
+
+model Post {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  caption String?
+  image String?
+  publicId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId String @db.ObjectId
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments Comment[]
+  likes Like[]
+}
+
+model Comment {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  text String 
+  userId String @db.ObjectId
+  postId String @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Like {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  postId    String   @db.ObjectId
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
